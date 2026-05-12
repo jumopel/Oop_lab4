@@ -5,11 +5,13 @@ using System.Text;
 
 namespace Lab4.Models
 {
-    internal class Concert
+    public class Concert
     {
         private string _organizer;
         private DateTime _date;
         private List<Performance> _performances;
+        public IReadOnlyList<Performance> Performances => _performances;
+
         public Concert()
         {
             _performances = new List<Performance>();
@@ -20,7 +22,7 @@ namespace Lab4.Models
             get => _organizer;
             set
             {
-                if (string.IsNullOrWhiteSpace(value) || value.Length < 3)
+                if (string.IsNullOrWhiteSpace(value) || value.Length <= 3)
                     throw new ArgumentException("Назва організатора має бути не менше 3 символів.");
                 _organizer = value;
             }
@@ -30,7 +32,6 @@ namespace Lab4.Models
             get => _date;
             set => _date = value;
         }
-        public IReadOnlyList<Performance> Performances => _performances;
         public void AddPerformance(Performance performance)
         {
             if (performance == null) throw new ArgumentNullException(nameof(performance));

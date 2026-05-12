@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Lab4.Models
 {
-    internal class Performance
+     public class Performance
     {
         private Performer _performer;
         private WorkType _workType;

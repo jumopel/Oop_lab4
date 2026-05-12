@@ -4,5 +4,5 @@ using System.Text;
 
 namespace Lab4.Models
 {
-    enum WorkType { instrumental, vocal, poetic, prose }
+    public enum WorkType { instrumental, vocal, poetic, prose }
 }

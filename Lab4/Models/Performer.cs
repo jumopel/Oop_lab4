@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Lab4.Models
 {
-    internal class Performer
+    public class Performer
     {
         private string _firstName;
         private string _lastName;

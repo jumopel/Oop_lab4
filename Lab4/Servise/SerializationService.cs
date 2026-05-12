@@ -14,7 +14,6 @@ namespace Lab4.Services
 
         public static void SaveList(List<Concert> concerts)
         {
-            // Перетворюємо список Моделей у список DTO
             var dtoList = concerts.Select(concert => new ConcertDto
             {
                 Organizer = concert.Organizer,
@@ -79,4 +78,4 @@ namespace Lab4.Services
             }
         }
     }
-}
+}   

@@ -7,6 +7,7 @@ namespace Lab4.UI
     public partial class PerformerForm : Window
     {
         public Performer ResultPerformer { get; private set; }
+        private bool _isSaved = false;
 
         public PerformerForm(Performer performer)
         {
@@ -24,6 +25,7 @@ namespace Lab4.UI
                 ResultPerformer.FirstName = txtFirstName.Text.Trim();
                 ResultPerformer.LastName = txtLastName.Text.Trim();
 
+                _isSaved = true;
                 this.DialogResult = true;
             }
             catch (ArgumentException ex)
@@ -34,7 +36,28 @@ namespace Lab4.UI
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            _isSaved = true;
             this.DialogResult = false;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!_isSaved)
+            {
+                var res = MessageBox.Show("Зберегти зміни?", "Увага", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (res == MessageBoxResult.Yes)
+                {
+                    btnOk_Click(sender, new RoutedEventArgs());
+                    if (this.DialogResult != true)
+                    {
+                        e.Cancel = true; 
+                    }
+                }
+                else if (res == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Lab4.Models;
+using System.Collections.ObjectModel;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using Lab4.Models;
@@ -8,15 +10,18 @@ namespace Lab4.UI
     public partial class MainForm : Window
     {
         private Concert _concert;
-
+        private ObservableCollection<Performance> _performances;
+        private bool _isClosingConfirmed = false;
+        public bool IsSaved { get; private set; } = false;
         public MainForm(Concert concert)
         {
             InitializeComponent();
             _concert = concert;
-
             txtOrganizer.Text = _concert.Organizer;
             dtpDate.SelectedDate = _concert.Date;
-            RefreshUI();
+            _performances = new ObservableCollection<Performance>(_concert.Performances);
+            lstPerformances.ItemsSource = _performances;
+            UpdateShortInfo();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -25,7 +30,8 @@ namespace Lab4.UI
             if (form.ShowDialog() == true)
             {
                 _concert.AddPerformance(form.ResultPerformance);
-                RefreshUI();
+                _performances.Add(form.ResultPerformance); 
+                UpdateShortInfo();
             }
         }
 
@@ -36,16 +42,14 @@ namespace Lab4.UI
                 var form = new PerformanceForm(selected) { Owner = this };
                 if (form.ShowDialog() == true)
                 {
-                    RefreshUI();
+                    lstPerformances.Items.Refresh();
+                    UpdateShortInfo();
                 }
             }
         }
 
-        private void RefreshUI()
+        private void UpdateShortInfo()
         {
-            lstPerformances.ItemsSource = null;
-            lstPerformances.ItemsSource = _concert.Performances;
-
             if (txtOrganizer.Text.Trim().Length >= 3)
             {
                 _concert.Organizer = txtOrganizer.Text;
@@ -60,17 +64,35 @@ namespace Lab4.UI
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            try
-            {
-                if (txtOrganizer.Text.Trim().Length >= 3)
-                    _concert.Organizer = txtOrganizer.Text;
+            if (_isClosingConfirmed) return;
 
-                _concert.Date = dtpDate.SelectedDate ?? DateTime.Now;
-            }
-            catch (Exception ex)
+            var res = MessageBox.Show("Зберегти зміни в деталях концерту?", "Увага", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (res == MessageBoxResult.Yes)
             {
-                MessageBox.Show("Помилка: " + ex.Message);
-                e.Cancel = true; 
+                try
+                {
+                    if (txtOrganizer.Text.Trim().Length >= 3)
+                        _concert.Organizer = txtOrganizer.Text;
+
+                    _concert.Date = dtpDate.SelectedDate ?? DateTime.Now;
+
+                    IsSaved = true; 
+                    _isClosingConfirmed = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Помилка: " + ex.Message);
+                    e.Cancel = true;
+                }
+            }
+            else if (res == MessageBoxResult.No)
+            {
+                IsSaved = false; 
+                _isClosingConfirmed = true;
+            }
+            else if (res == MessageBoxResult.Cancel)
+            {
+                e.Cancel = true;
             }
         }
     }

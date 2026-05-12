@@ -11,7 +11,6 @@ namespace Lab4.Models
         private DateTime _date;
         private List<Performance> _performances;
         public IReadOnlyList<Performance> Performances => _performances;
-
         public Concert()
         {
             _performances = new List<Performance>();
